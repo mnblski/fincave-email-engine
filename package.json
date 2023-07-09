@@ -1,0 +1,32 @@
+{
+  "name": "fincave-email-engine",
+  "version": "1.0.0-alpha.1",
+  "author": "Marcel Niebylski",
+  "dependencies": {
+    "@google-cloud/local-auth": "^2.1.0",
+    "axios": "^1.4.0",
+    "bcrypt": "^5.1.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "firebase-admin": "^11.8.0",
+    "googleapis": "^105.0.0",
+    "imapflow": "^1.0.128",
+    "joi": "^17.9.2",
+    "openai": "^3.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  },
+  "scripts": {
+    "test": "node openai/init.js && gmail/init.js",
+    "openai": "node openai/init.js",
+    "gmail": "node gmail/init.js",
+    "start": "node main.js",
+    "dev": "nodemon main.js"
+  },
+  "description": "Fincave email engine: listening, processing and notyfing",
+  "main": "main.js",
+  "license": "MIT"
+}
