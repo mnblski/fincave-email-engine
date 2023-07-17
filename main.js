@@ -7,7 +7,6 @@ const corsConfig = require("./config/cors.config");
 
 const app = express();
 const PORT = process.env.PORT;
-const API_BASE_PATH = process.env.API_BASE_PATH;
 
 const {errorHandler, errorLogger} = require("./middleware/error.middleware");
 
@@ -22,10 +21,7 @@ app.use(cookieParser());
 app.use(cors(corsConfig));
 
 /** isolated Routers with Route controllers */
-app.use(`${API_BASE_PATH}/user`, userRouter);
-app.use(`${API_BASE_PATH}/assets`, assetsRouter);
-// app.use(`${API_BASE_PATH}/orders`, ordersRouter);
-// app.use("/product", productRouter);
+
 
 // user -> assets -> product
 // user -> orders -> product

@@ -1,4 +1,6 @@
 .env
 node_modules
 lib/firebase/credentials.json
+services/gmail/credentials.json
+services/gmail/token.json
 ```

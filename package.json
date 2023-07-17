@@ -7,6 +7,7 @@
   "license": "MIT",
   "dependencies": {
     "@google-cloud/local-auth": "^2.1.0",
+    "@google-cloud/pubsub": "^3.7.1",
     "axios": "^1.4.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -22,9 +23,9 @@
     "nodemon": "^2.0.22"
   },
   "scripts": {
-    "test": "node openai/init.js && gmail/init.js",
+    "test": "node services/gmail/init.js && services/gmail-pub-sub/main.js",
     "openai": "node openai/init.js",
-    "gmail": "node gmail/init.js",
+    "gmail": "node services/gmail/init.js",
     "start": "node main.js",
     "dev": "nodemon main.js"
   }
