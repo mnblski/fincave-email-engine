@@ -5,7 +5,8 @@ const {authenticate} = require('@google-cloud/local-auth');
 const {google} = require('googleapis');
 const { extractPurchaseDataAI } = require('../openai/lib/extractPurchaseDataAI');
 const { getMessageParts } = require('./lib/extractMessagePayload');
-const e = require('express');
+const { pubSubInit } = require('../gmail-pub-sub/main');
+const { gmail } = require('googleapis/build/src/apis/gmail');
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
@@ -15,12 +16,12 @@ const SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
 
 // ?  process.cwd() - returns the current working directory of the Node.js process
 // ? path.join() - joins all given path segments together using the platform-specific separator as a delimiter, then normalizes the resulting path.
-// ? path.join(process.cwd(), './gmail/token.json') - returns the current working directory of the Node.js process + /gmail/token.json
+// ? path.join(process.cwd(), './gmail/token.json') - returnsf the current working directory of the Node.js process + /gmail/token.json
 // ? fs - file system module
 // ? fs.writeFile() - writes data to a file, replacing the file if it already exists. data can be a string or a buffer.
 // ? fs.readFile() - reads the entire contents of a file. data can be a string or a buffer.
-const TOKEN_PATH = path.join(process.cwd(), './gmail/token.json');
-const CREDENTIALS_PATH = path.join(process.cwd(), './gmail/credentials.json');
+const TOKEN_PATH = path.join(process.cwd(), './services/gmail/token.json');
+const CREDENTIALS_PATH = path.join(process.cwd(), './services/gmail/credentials.json');
 
 
 /**
@@ -76,6 +77,33 @@ async function authorize() {
   return client;
 }
 
+// connect user flow
+// 1. authorize user and request permissions
+// 2. perform full sync (silent)
+// 4. save history id to db
+// 3. init watch for changes
+
+function watchUserEmail(gmail) {
+    const resource = {
+      'labelIds': ['UNREAD'],
+      'topicName': 'projects/fincave/topics/new-message-topic',
+    }
+    gmail.users.watch({
+      userId: 'me',
+      resource
+    })
+    .then(res => {
+      console.log('Push notifications set up successfully!', res);
+
+     // SAVE HISTORY ID TO DB
+
+    })
+    .catch(err => {
+      console.error('Error setting up push notifications:', err);
+      return;
+    })
+}
+
 
 /**
  * Lists the labels in the user's account.
@@ -90,15 +118,19 @@ async function listLabels(auth) {
       userId: 'me',
       maxResults: 1
     })
+    
+
+    // Make the watch request to set up push notifications
+    watchUserEmail(gmail);
 
     console.log('messagesPage', messagesPage.data.messages);
+
+    pubSubInit();
 
     if (messagesPage.data?.messages?.length) {
 
       for (let i = 0; i < messagesPage.data.messages.length; i++) {
         const message = messagesPage.data.messages[i];
-
-        console.log('message', message)
 
         const m = await gmail.users.messages.get({
           userId: 'me',
